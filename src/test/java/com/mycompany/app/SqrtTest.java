@@ -1,83 +1,101 @@
 package com.mycompany.app;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SqrtTest {
 
-    private static final double EPS = 1e-8;
+    private static final double ACC = 1e-7;
 
     @Test
-    void averageOfThreeAndSeven() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertEquals(5.0, sqrt.average(3.0, 7.0), EPS);
+    @DisplayName("average: 5 и 11")
+    void srednee_dlya_pyati_i_odinnadtsati() {
+        Sqrt s = new Sqrt(50);
+        assertEquals(8.0, s.average(5.0, 11.0), 1e-12);
     }
 
     @Test
-    void averageOfOppositeValues() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertEquals(0.0, sqrt.average(-4.0, 4.0), EPS);
-        assertNotEquals(0.0, sqrt.average(-4.0, 3.0), EPS);
+    @DisplayName("average: -11 и 17")
+    void srednee_otritsatelnoe_i_polozhitelnoe() {
+        Sqrt s = new Sqrt(50);
+        assertEquals(3.0, s.average(-11.0, 17.0), 1e-12);
     }
 
     @Test
-    void goodForPerfectSquareRoot() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertTrue(sqrt.good(3.0, 9.0));
-        assertTrue(sqrt.good(7.0, 49.0));
+    @DisplayName("good: точное значение для 529")
+    void tochnaya_ocenka_dlya_pyatisot_dvadtsati_devyati() {
+        Sqrt s = new Sqrt(50);
+        assertTrue(s.good(23.0, 529.0));
     }
 
     @Test
-    void goodRejectsInaccurateGuess() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertFalse(sqrt.good(2.0, 9.0));
-        assertFalse(sqrt.good(4.0, 20.0));
+    @DisplayName("good: грубая оценка отклоняется")
+    void grubaya_ocenka_ne_podkhodit() {
+        Sqrt s = new Sqrt(50);
+        assertFalse(s.good(22.0, 529.0));
     }
 
     @Test
-    void improveMovesGuessCloser() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertEquals(1.5, sqrt.improve(1.0, 2.0), EPS);
-        assertEquals(5.0, sqrt.improve(2.0, 16.0), EPS);
+    @DisplayName("improve: шаг для 18")
+    void shag_uluchsheniya_dlya_vosemnadtsati() {
+        Sqrt s = new Sqrt(18);
+        assertEquals(4.5, s.improve(3.0, 18.0), 1e-12);
     }
 
     @Test
-    void iterStopsOnGoodGuess() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertEquals(5.0, sqrt.iter(5.0, 25.0), EPS);
+    @DisplayName("improve: угадывание уже верное")
+    void uluchshenie_bez_izmeneniy() {
+        Sqrt s = new Sqrt(2401);
+        assertEquals(49.0, s.improve(49.0, 2401.0), 1e-12);
     }
 
     @Test
-    void iterFindsRootFromRoughStart() {
-        Sqrt sqrt = new Sqrt(1.0);
-        assertEquals(3.0, sqrt.iter(1.0, 9.0), 1e-6);
+    @DisplayName("iter: сразу возвращает угаданное")
+    void iter_bez_dopolnitelnykh_shagov() {
+        Sqrt s = new Sqrt(72);
+        assertEquals(14.0, s.iter(14.0, 196.0), 1e-10);
     }
 
     @Test
-    void calcForPerfectSquare() {
-        Sqrt sqrt = new Sqrt(144.0);
-        assertEquals(12.0, sqrt.calc(), EPS);
+    @DisplayName("iter: сходимость к корню из 27")
+    void iter_dlya_dvadtsati_semi() {
+        Sqrt s = new Sqrt(27);
+        assertEquals(Math.sqrt(27.0), s.iter(3.0, 27.0), ACC);
     }
 
     @Test
-    void calcForTwo() {
-        Sqrt sqrt = new Sqrt(2.0);
-        assertEquals(Math.sqrt(2.0), sqrt.calc(), 1e-6);
+    @DisplayName("calc: корень из 2401")
+    void calc_dlya_dvukh_tysyach_chetyresta_odin() {
+        assertEquals(49.0, new Sqrt(2401.0).calc(), ACC);
     }
 
     @Test
-    void calcForSmallPositive() {
-        Sqrt sqrt = new Sqrt(0.01);
-        assertEquals(0.1, sqrt.calc(), 1e-6);
+    @DisplayName("calc: корень из 18")
+    void calc_dlya_vosemnadtsati() {
+        assertEquals(Math.sqrt(18.0), new Sqrt(18.0).calc(), ACC);
     }
 
     @Test
-    void calcForLargeValue() {
-        Sqrt sqrt = new Sqrt(50625.0);
-        assertEquals(225.0, sqrt.calc(), 1e-6);
+    @DisplayName("calc: ноль")
+    void calc_dlya_nulya() {
+        assertEquals(0.0, new Sqrt(0.0).calc(), 1e-12);
+    }
+
+    @Test
+    @DisplayName("calc: дробное число 0.09")
+    void calc_dlya_nulya_nulevogo_devyati() {
+        assertEquals(0.3, new Sqrt(0.09).calc(), ACC);
+    }
+
+    @Test
+    @DisplayName("конструктор сохраняет arg")
+    void pole_arg_sokhranyaetsya() {
+        Sqrt s = new Sqrt(1849.0);
+        assertEquals(1849.0, s.arg, 1e-12);
+        assertEquals(43.0, s.calc(), ACC);
     }
 }
